@@ -1,28 +1,29 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography, Grid, Alert } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { forgotPassword } from "../services/authService";
+import { useNavigate, useParams } from "react-router-dom";
+import { resetPassword } from "../services/authService";
 
-const ForgotPasswordPage: React.FC = () => {
-  const [input, setInput] = useState("");
+const ResetPasswordPage: React.FC = () => {
+  const { token } = useParams<{ token: string }>();
+  const [password, setPassword] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    if (!input.trim()) {
-      setError("Please enter a valid email or username");
+    if (!password.trim()) {
+      setError("Please enter a valid password");
     } else {
       try {
-        await forgotPassword({ email: input });
+        await resetPassword(token!, { password });
         setSuccess(true);
         setError(null);
         setTimeout(() => {
           navigate("/login");
         }, 2000); // Redirect to login page after 2 seconds
       } catch (error) {
-        console.error("Forgot password error:", error);
-        setError("Failed to send reset instructions. Please try again.");
+        console.error("Reset password error:", error);
+        setError("Failed to reset password. Please try again.");
         setSuccess(false);
       }
     }
@@ -55,11 +56,11 @@ const ForgotPasswordPage: React.FC = () => {
             marginBottom: "20px",
           }}
         >
-          Forgot Password
+          Reset Password
         </Typography>
         {success && (
           <Alert severity="success" sx={{ marginBottom: "20px" }}>
-            Password reset instructions sent! Redirecting to login...
+            Password reset successfully! Redirecting to login...
           </Alert>
         )}
         {error && (
@@ -74,13 +75,14 @@ const ForgotPasswordPage: React.FC = () => {
             marginBottom: "20px",
           }}
         >
-          Enter your email or username to reset your password.
+          Enter your new password.
         </Typography>
         <TextField
           fullWidth
-          placeholder="Enter your email or username"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter your new password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           error={!!error}
           helperText={error}
           variant="outlined"
@@ -124,4 +126,4 @@ const ForgotPasswordPage: React.FC = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default ResetPasswordPage;

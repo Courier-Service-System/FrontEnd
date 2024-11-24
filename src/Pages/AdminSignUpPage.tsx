@@ -25,7 +25,7 @@ const validationSchema = yup.object({
   nic: yup.string().required("NIC is required"),
 });
 
-interface SignUpFormValues {
+interface AdminSignUpFormValues {
   first_name: string;
   last_name: string;
   address: string;
@@ -43,12 +43,12 @@ interface ErrorResponse {
   };
 }
 
-const SignUpPage: React.FC = () => {
+const AdminSignUpPage: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const formik = useFormik<SignUpFormValues>({
+  const formik = useFormik<AdminSignUpFormValues>({
     initialValues: {
       first_name: "",
       last_name: "",
@@ -61,7 +61,8 @@ const SignUpPage: React.FC = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-        const response = await registerUser({ ...values, role: "user" });
+        const userData = { ...values, role: "admin" };
+        const response = await registerUser(userData);
         console.log("Registration successful:", response);
         setSuccess(true);
         setError(null);
@@ -99,7 +100,7 @@ const SignUpPage: React.FC = () => {
       >
         <StyledCard>
           <Typography variant="h5" align="center" gutterBottom>
-            Sign Up
+            Admin Sign Up
           </Typography>
           {success && (
             <Alert severity="success" sx={{ marginBottom: "20px" }}>
@@ -138,19 +139,6 @@ const SignUpPage: React.FC = () => {
                 formik.touched.last_name && Boolean(formik.errors.last_name)
               }
               helperText={formik.touched.last_name && formik.errors.last_name}
-              variant="outlined"
-              size="small"
-              sx={{ marginBottom: "20px" }}
-            />
-            <TextField
-              fullWidth
-              label="NIC"
-              name="nic"
-              value={formik.values.nic}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.nic && Boolean(formik.errors.nic)}
-              helperText={formik.touched.nic && formik.errors.nic}
               variant="outlined"
               size="small"
               sx={{ marginBottom: "20px" }}
@@ -214,12 +202,26 @@ const SignUpPage: React.FC = () => {
               size="small"
               sx={{ marginBottom: "20px" }}
             />
+            <TextField
+              fullWidth
+              label="NIC"
+              name="nic"
+              value={formik.values.nic}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.nic && Boolean(formik.errors.nic)}
+              helperText={formik.touched.nic && formik.errors.nic}
+              variant="outlined"
+              size="small"
+              sx={{ marginBottom: "20px" }}
+            />
             <Button
               fullWidth
               variant="contained"
               color="primary"
               type="submit"
               sx={{
+                marginBottom: "15px",
                 backgroundColor: "#1976d2",
                 "&:hover": {
                   backgroundColor: "#1565c0",
@@ -229,7 +231,14 @@ const SignUpPage: React.FC = () => {
               Register
             </Button>
           </form>
-          <Typography variant="body2" align="center" sx={{ marginTop: "15px" }}>
+          <Typography
+            variant="body2"
+            align="center"
+            sx={{
+              marginTop: "10px",
+              color: "#666",
+            }}
+          >
             Already have an account?{" "}
             <Button
               href="/login"
@@ -252,4 +261,4 @@ const SignUpPage: React.FC = () => {
   );
 };
 
-export default SignUpPage;
+export default AdminSignUpPage;
